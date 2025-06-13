@@ -1,38 +1,34 @@
 <?php
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EventController;
-use App\Http\Controllers\Api\AttendeeController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
+Route::middleware('auth:sanctum')
+    ->get('/user', function (Request $request) {
+        return $request->user();
+    });
 
 Route::post('/login', [AuthController::class, 'login']);
-
-
 Route::post('/logout', [AuthController::class, 'logout'])
-     ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum');
 
-// Events Resource: Protect all routes except index and show
+// Public routes
 Route::apiResource('events', EventController::class)
-    ->except(['index', 'show']) // These remain public
-    ->middleware(['auth:sanctum', 'throttle:60,1']); // Authentication required
+    ->only(['index', 'show']);
 
-// Public routes for events (accessible without authentication)
-Route::get('events', [EventController::class, 'index']);
-Route::get('events/{event}', [EventController::class, 'show']);
+// Protected routes
+Route::apiResource('events', EventController::class)
+    ->only(['store', 'update', 'destroy'])
+    ->middleware(['auth:sanctum', 'throttle:api']);
 
-
-
-
-// Attendee Resource: Protect all routes except index and show
-Route::apiResource('events', AttendeeController::class)
-    ->except(['index', 'show', 'update']) // These remain public
-    ->middleware(['auth:sanctum', 'throttle:60,1']); // Authentication required
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+    Route::apiResource('events.attendees', AttendeeController::class)
+        ->scoped()
+        ->only(['store', 'destroy']);
+});
 
 Route::apiResource('events.attendees', AttendeeController::class)
-->scoped()->except(['update']);
+    ->scoped()
+    ->only(['index', 'show']);

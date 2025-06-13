@@ -24,10 +24,16 @@ class EventController extends Controller
 
 
     public function __construct()
-    {
-       
-        Gate::authorize(Event::class, 'event');
-    }
+{
+    // Apply Sanctum auth to all except index and show
+    $this->middleware('auth:sanctum')->except(['index', 'show']);
+
+    // Apply API throttling to modifying actions
+    $this->middleware('throttle:api')->only(['store', 'update', 'destroy']);
+
+    // Apply authorization policy automatically
+    $this->authorizeResource(Event::class, 'event');
+}
 
     /**
      * Display a listing of the resource.

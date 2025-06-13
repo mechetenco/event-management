@@ -18,12 +18,16 @@ class AttendeeController extends Controller
     private array $relations = ['user'];
 
     public function __construct()
-    {
-       
-        Gate::authorize(Attendee::class, 'attendee');
+{
+    // Allow unauthenticated access to index, show, and update
+    $this->middleware('auth:sanctum')->except(['index', 'show', 'update']);
 
-       
-    }
+    // Throttle only store and destroy actions
+    $this->middleware('throttle:api')->only(['store', 'destroy']);
+
+    // Automatically apply policy-based authorization
+    $this->authorizeResource(Attendee::class, 'attendee');
+}
 
    
     /**
