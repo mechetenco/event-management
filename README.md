@@ -20,7 +20,7 @@ A RESTful API built with Laravel for managing events, attendees, and notificatio
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/mechetenco/event-management-api.git
+git clone https://github.com/mechetenco/event-management-API.git
 cd event-management-api
 ```
 
@@ -142,7 +142,7 @@ Set the following cron job on your server:
 
 ## 🛠️ Technologies
 
-- Laravel 11
+- Laravel 12
 - Laravel Sanctum
 - MySQL
 - Mailtrap (email testing)
